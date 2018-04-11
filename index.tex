@@ -4,8 +4,49 @@
   \usepackage[utf8]{inputenc}
   \usepackage[T1]{fontenc}
   \usepackage{lmodern}
+  \usepackage{listings}
+  \usepackage{color}
+  \usepackage{blindtext}
+  \usepackage{scrextend}
+  
+  \addtokomafont{labelinglabel}{\sffamily}
+  \definecolor{lightgray}{rgb}{.9,.9,.9}
+  \definecolor{darkgray}{rgb}{.4,.4,.4}
+  \definecolor{purple}{rgb}{0.65, 0.12, 0.82}
+  
+  \lstdefinelanguage{JavaScript}{
+    keywords={typeof, new, true, false, catch, function, return, null, catch, switch, var, let, const, if, in, while, do, else, case, break},
+    keywordstyle=\color{blue}\bfseries,
+    ndkeywords={class, export, boolean, throw, implements, import, from, this},
+    ndkeywordstyle=\color{darkgray}\bfseries,
+    identifierstyle=\color{black},
+    sensitive=false,
+    comment=[l]{//},
+    morecomment=[s]{/*}{*/},
+    commentstyle=\color{purple}\ttfamily,
+    stringstyle=\color{red}\ttfamily,
+    morestring=[b]',
+    morestring=[b]"
+  }
+  
+  \lstset{
+     language=JavaScript,
+     backgroundcolor=\color{lightgray},
+     extendedchars=true,
+     basicstyle=\footnotesize\ttfamily,
+     showstringspaces=false,
+     showspaces=false,
+     numbers=left,
+     numberstyle=\footnotesize,
+     numbersep=9pt,
+     tabsize=2,
+     breaklines=true,
+     showtabs=false,
+     captionpos=b
+  }
+  
   \title{React \& D3}
-  \author{Esteban Sotillo\\CPNV}
+  \author{Esteban Sotillo\\{\small CPNV-ES}}
   
   \date{{\small \today}}
   % Hint: \title{what ever}, \author{who care} and \date{when ever} could stand 
@@ -17,6 +58,89 @@
 \maketitle
 \section{Introduction}
 Documentation de l'utilisation de React et D3 afin de pouvoir commencer un projet avec ces technologies de manières simple et rapides.
+
+Pour faire ce projet j'ai travaillé sur une version de linux donc certaines manipulations risque de changer un peu. Les possibles manipulations supplémentaires sont laissées au lecteur.
+
+\section{Mise en place}
+\subsection{Prérequis}
+\begin{itemize}
+  \item npm v5.x+
+  \item Syntaxe ES6+
+  \item React
+\end{itemize}
+
+\subsection{Création de la base du projet}
+Pour la base du projet il est plus pratique d'utiliser le CLI de création d'app React afin d'avoir une base de code consistante avec tous les modules principaux.
+\begin{lstlisting}[language=bash]
+  npm i -g create-react-app
+  create-react-app my-app
+  cd my-app
+\end{lstlisting}
+
+\subsection{Installation des dépendances}
+Pour ce projet j'ai utilisé différents packages dont j'expliquerais l'utilité dans les prochaines lignes.
+
+\begin{labeling}{react-chord-diagram}
+  \item [react-move] Utilisé pour aider à l'animation de composants react.
+  \item [react-chord-diagram] Composant react simplifiant l'utilisation du diagram chord de D3.
+  \item [d3-ease] Librairie de fonctions servant à définir le flux des transitions.
+\end{labeling}
+Pour les installer il suffit d'entrer la commande suivante : 
+\begin{lstlisting}[language=bash]
+  npm i react-move react-chord-diagram d3-ease
+\end{lstlisting}
+
+\subsection{Structure de fichier}
+Voici un rapide descriptif des fichiers utiles pour commencer le projet.
+\begin{lstlisting}
++ public : fichiers statics modifiable
++ src : dossier de travail
+  - index.js : fichier js de base
+  - App.js : Composant react originel
+\end{lstlisting}
+
+\section{Utilisation}
+Dans cette partie, je vais faire un petit projet afin d'expliquer plus facilement l'utilisation des composants.
+\subsection{Importation des composants}
+Dans le fichier \textbf{src/App.js} ajouter ces trois lignes au début du fichier.
+\begin{lstlisting}[language=JavaScript]
+  import ChordDiagram from 'react-chord-diagram'
+  import { Animate } from 'react-move'
+  import { easeExpInOut } from 'd3-ease'
+\end{lstlisting}
+Puis supprimer le contenu de la première div.
+\pagebreak
+\subsection{Composant ChordDiagram}
+Le composant ChordDiagram possède 4 propriétés que nous allons utiliser qui sont "matrix", "componentId", "groupLabels" et "groupColors".\\
+La propriété "matrix" est un tableau à 2 dimensions comprenant en x la quantité partant et en y la quantité de réception.\\
+La propriété "componentId" est un ID pour reconnaître le diagramme.\\
+La propriété "groupLabels" est un tableau de string utilisé comme label pour le diagramme.\\
+La propriété "groupColors" est un tableau de couleurs css utilisé pour le diagramme.\\\\
+Exemple : 
+\begin{lstlisting}[language=html]
+  <ChordDiagram
+    matrix={[[1,2],[3,4]]}
+    componentId={"ID"}
+    groupLabels={["foo", "boo"]}
+    groupColors={["#333","#567"]}
+  />
+\end{lstlisting}
+
+
+\subsection{Composant Animate}
+Le composant Animate sers à aider à l'animation des composants react. Il possède 2 propriétés requises qui sont "start" et "update". Ces deux propriétés sont des références de fonction définissant respectivement les status initiaux et les status après execution.\\\\
+Exemple :
+\begin{lstlisting}[language=html]
+  <Animate
+    start={() => ({
+      x: 0
+    })}
+    update={() => ({
+      x: [1],
+      timing: { duration: 1500, ease: easeExpInOut },
+    })}
+  >
+\end{lstlisting}
 
 
 
