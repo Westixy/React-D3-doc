@@ -140,8 +140,113 @@ Exemple :
       timing: { duration: 1500, ease: easeExpInOut },
     })}
   >
+  {state => null /* do something with state.x */}
+  </Animate>
 \end{lstlisting}
 
+\subsection{Dans le code}
+\subsubsection{Configuration du composant React}
+Pour commencer, il faut définir des "state" sur notre composant app (à défaut d'en avoir créer un autre). nous aurons besoin de trois variables différentes qui sont "x", "matrix" et "oldMatrix". Il faut le définir dans le constructeur de notre composant.
+\begin{lstlisting}[language=JavaScript]
+  constructor() {
+    this.state = {
+      x: 0,
+      matrix: [[]],
+      oldMatrix: null,
+    }
+  }
+\end{lstlisting}
+Il faut ensuite ajouter un bouton (dans la partie rendu) qui sera utilisé pour modifier les données de notre matrice.
+\begin{lstlisting}[language=html]
+  <div className="App">
+    <input type="button" onClick={()=>{}} value="update" />
+  </div>
+\end{lstlisting}
+Ajouter le composant Animate a la suite du bouton.
+\begin{lstlisting}[language=JavaScript]
+  <Animate
+    start={() => ({
+      x: 0,
+    })}
+    update={() => ({
+      x: [this.state.x],
+      timing: { duration: 1500, ease: easeExpInOut },
+    })}
+  >
+    {state => {
+      let {x} = state
+      // la suite se passera ici
+    }}
+  </Animate>
+\end{lstlisting}
+\pagebreak
+\subsubsection{Calcul des différences entre les matrices}
+Afin d'avoir une transition jolie entre la nouvelle et l'ancienne matrice, il faut calculer a l'aide de l'indice x (qui évoluera entre 0 et 1).\\
+Le code se trouve dans le contenu du composant Animate. 
+\begin{lstlisting}[language=JavaScript]
+  let {x} = state
+  let a = this.state.matrix
+  // si il n'y a pas de matrice pas besoin de calculer
+  if (this.state.oldMatrix !== null) {
+    // transformation de x
+    x = this.state.do === 0 ? 1 - x : x
+    
+    let base = this.state.oldMatrix
+    let change = this.state.matrix
+    let isNormal = true
+
+    if (base.length < change.length) {
+      [base, change] = [change, base]
+      isNormal = false
+    }
+
+    a = base.map((row, ri) =>
+      row.map((cell, ci) => {
+        let cellChange = 0
+        let cellBase = cell
+        if (change[ri] && change[ri][ci])
+          cellChange = change[ri][ci]
+        if (!isNormal) {
+          cellBase = cellChange
+          cellChange = cell
+        }
+        return Math.round(cellBase + x * (cellChange - cellBase))
+      })
+    )
+  }
+  // quand c'est termine, force la matrice
+  if (x === 1) {
+    a = this.state.matrix
+  }
+\end{lstlisting}
+\pagebreak
+\subsubsection{Rendu du diagramme}
+Une fois que la matrice est calculée, il suffit de retourner le composant ChordDiagram pour l'afficher.
+\begin{lstlisting}[language=JavaScript]
+  return (
+    <ChordDiagram
+      matrix={a}
+      componentId={1}
+      groupLabels={this.labels}
+      groupColors={this.colors}
+    />
+  )
+\end{lstlisting}
+NB: les labels et couleurs n'ont pas encore été définies mais le seront dans une prochaine partie.
+
+\subsubsection{Création des données de matrices}
+Etant donné qu'il n'y a pas de vrai données, il va falloir les générer aléatoirement. Voici une fonction qui va créer une matrice. Il suffit d l'ajouter dans les méthodes de la classe App.
+\begin{lstlisting}[language=JavaScript]
+  generateMatrix (size = 4, min = 100, max = 10000) {
+    let item = []
+    for(let i=0; i<size; i++) item.push(0)
+    return item.map(_=> item.map(_=>
+      Math.round(Math.random()*(max-min)+min)
+    ))
+  }
+\end{lstlisting}
+
+\subsubsection{Méthode de màj de matrice}
 
 
 \end{document}
