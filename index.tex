@@ -61,6 +61,7 @@ Documentation de l'utilisation de React et D3 afin de pouvoir commencer un proje
 
 Pour faire ce projet j'ai travaillé sur une version de linux donc certaines manipulations risque de changer un peu. Les possibles manipulations supplémentaires sont laissées au lecteur.
 
+\pagebreak
 \section{Mise en place}
 \subsection{Prérequis}
 \begin{itemize}
@@ -109,7 +110,7 @@ Dans le fichier \textbf{src/App.js} ajouter ces trois lignes au début du fichie
   import { easeExpInOut } from 'd3-ease'
 \end{lstlisting}
 Puis supprimer le contenu de la première div.
-\pagebreak
+
 \subsection{Composant ChordDiagram}
 Le composant ChordDiagram possède 4 propriétés que nous allons utiliser qui sont "matrix", "componentId", "groupLabels" et "groupColors".\\
 La propriété "matrix" est un tableau à 2 dimensions comprenant en x la quantité partant et en y la quantité de réception.\\
@@ -144,8 +145,8 @@ Exemple :
   </Animate>
 \end{lstlisting}
 
-\subsection{Dans le code}
-\subsubsection{Configuration du composant React}
+\section{Dans le code}
+\subsection{Configuration du composant React}
 Pour commencer, il faut définir des "state" sur notre composant app (à défaut d'en avoir créer un autre). nous aurons besoin de trois variables différentes qui sont "x", "matrix" et "oldMatrix". Il faut le définir dans le constructeur de notre composant.
 \begin{lstlisting}[language=JavaScript]
   constructor() {
@@ -179,8 +180,8 @@ Ajouter le composant Animate a la suite du bouton.
     }}
   </Animate>
 \end{lstlisting}
-\pagebreak
-\subsubsection{Calcul des différences entre les matrices}
+
+\subsection{Calcul des différences entre les matrices}
 Afin d'avoir une transition jolie entre la nouvelle et l'ancienne matrice, il faut calculer a l'aide de l'indice x (qui évoluera entre 0 et 1).\\
 Le code se trouve dans le contenu du composant Animate. 
 \begin{lstlisting}[language=JavaScript]
@@ -219,8 +220,8 @@ Le code se trouve dans le contenu du composant Animate.
     a = this.state.matrix
   }
 \end{lstlisting}
-\pagebreak
-\subsubsection{Rendu du diagramme}
+
+\subsection{Rendu du diagramme}
 Une fois que la matrice est calculée, il suffit de retourner le composant ChordDiagram pour l'afficher.
 \begin{lstlisting}[language=JavaScript]
   return (
@@ -234,8 +235,8 @@ Une fois que la matrice est calculée, il suffit de retourner le composant Chord
 \end{lstlisting}
 NB: les labels et couleurs n'ont pas encore été définies mais le seront dans une prochaine partie.
 
-\subsubsection{Création des données de matrices}
-Etant donné qu'il n'y a pas de vrai données, il va falloir les générer aléatoirement. Voici une fonction qui va créer une matrice. Il suffit d l'ajouter dans les méthodes de la classe App.
+\subsection{Création des données de matrices}
+Étant donné qu'il n'y a pas de vraies données, il va falloir les générer aléatoirement. Voici une fonction qui va créer une matrice. Il suffit d l'ajouter dans les méthodes de la classe App.
 \begin{lstlisting}[language=JavaScript]
   generateMatrix (size = 4, min = 100, max = 10000) {
     let item = []
@@ -246,7 +247,43 @@ Etant donné qu'il n'y a pas de vrai données, il va falloir les générer aléa
   }
 \end{lstlisting}
 
-\subsubsection{Méthode de màj de matrice}
+\subsection{Méthode de màj de matrice}
+Pour simplifier l'utilisation, il est intéressant de créer une méthode qui sera exécutée quand on veux mettre à jour les données de la matrice.
+\begin{lstlisting}[language=JavaScript]
+  updateMatrix () {
+    this.setState({
+      oldMatrix: this.state.matrix,
+      matrix: this.generateMatrix(),
+      x: this.state.x === 0 ? 1 : 0,
+    })
+  }
+\end{lstlisting}
+
+\subsection{Finitions}
+Pour que le tout fonctionne il faut modifier un peu le constructeur et la fonction onClick du bouton.\\
+Constructeur : 
+\begin{lstlisting}[language=JavaScript]
+  constructor() {
+    this.state = {
+      x: 0,
+      matrix: this.generateMatrix(),
+      oldMatrix: null,
+    }
+    this.labels = ['a', 'b', 'c', 'd']
+    this.colors = ['red', 'yellow', 'green', 'blue']
+  }
+\end{lstlisting}
+Bouton:
+\begin{lstlisting}[language=html]
+  <input type="button" onClick={()=> this.updateMatrix() } value="update" />
+\end{lstlisting}
+
+\subsubsection{Documentations}
+\begin{itemize}
+  \item https://reactjs.org/docs/jsx-in-depth.html
+  \item https://www.npmjs.com/package/react-move
+  \item https://www.npmjs.com/package/react-chord-diagram
+\end{itemize}
 
 
 \end{document}
